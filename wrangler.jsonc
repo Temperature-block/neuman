@@ -3,5 +3,6 @@
   "vars": {
     "HUGO_VERSION": "0.169.0"
   },
+  "compatibility_date":"2026-11-13"
   // ...
 }
