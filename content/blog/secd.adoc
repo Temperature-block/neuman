@@ -99,7 +99,7 @@ let rec run (s,e,c,d) = match (s,e,c,d) with
   
                   | ([v],_,[],(stck,env,cont)::dmp) -> run ((v::stck),env,cont,dmp) (* 2 *)
 
-                  | (_,_, Term ( Lit t )::crst,_) -> run ((Int t)::s,e,crst,d)  (* tc of int lit term*) (* 3 *)
+                  | (_,_, Term ( Lit t )::crst,_) -> run ((Int t)::s,e,crst,d) (* 3 *)
 
                   | (_,_, Term ( Var t )::crst,_) -> run ((Option.get (ENV.lookup(t) e))::s,e,crst,d) (* 4 *)
 
