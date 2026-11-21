@@ -30,6 +30,11 @@ baseURL = 'https://neuman.tlab-vijay.workers.dev/'
     ]
 
 [[menus.main]]
+  name = 'Home'
+  pageRef = '/'
+  weight = 5
+
+[[menus.main]]
   name = 'About'
   pageRef = '/Aboutme'
   weight = 10

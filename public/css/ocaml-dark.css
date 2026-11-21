@@ -1,0 +1,12 @@
+[class*="caml"],
+[class*="cm"] {
+  background-color: #1e1e1e !important;
+  color: #d4d4d4 !important;
+}
+
+/* line number gutter */
+[class*="cm-gutter"],
+[class*="cm-lineNumbers"] {
+  background-color: #252526 !important;
+  color: #858585 !important;
+}
