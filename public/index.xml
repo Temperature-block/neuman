@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Temperatures blog on temperature&#39;s blog</title>
+		<link>http://localhost:1313/</link>
+		<description>Recent content in Temperatures blog on temperature&#39;s blog</description>
+		<generator>Hugo</generator>
+		<language>en-us</language>
+		
+		
+		
+		
+			<lastBuildDate>Sat, 14 Nov 2026 18:40:37 +0000</lastBuildDate>
+		
+			<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Secd</title>
+				<link>http://localhost:1313/blog/secd/</link>
+				<pubDate>Sat, 14 Nov 2026 18:40:37 +0000</pubDate>
+				<guid>http://localhost:1313/blog/secd/</guid>
+				<description>&lt;div class=&#34;paragraph&#34;&gt;&#xA;&lt;p&gt;This is my best attempt at implementing and writing about the SECD abstract machine.&lt;/p&gt;&#xA;&lt;/div&gt;&#xA;&lt;div class=&#34;sect1&#34;&gt;&#xA;&lt;h2 id=&#34;_some_history&#34;&gt;Some History.&lt;/h2&gt;&#xA;&lt;div class=&#34;sectionbody&#34;&gt;&#xA;&lt;div class=&#34;paragraph&#34;&gt;&#xA;&lt;p&gt;This is an abstract machine proposed by Dr. Ladin in his seminal paper to execute lambda calculus; you can refer to the wiki for more history.&lt;br/&gt;&lt;/p&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;div class=&#34;sect1&#34;&gt;&#xA;&lt;h2 id=&#34;_high_level_overview&#34;&gt;High level overview&lt;/h2&gt;&#xA;&lt;div class=&#34;sectionbody&#34;&gt;&#xA;&lt;div class=&#34;paragraph&#34;&gt;&#xA;&lt;p&gt;SECD stands for stack, environment, code, and dump, the four registers that this machine uses&lt;br/&gt;&lt;/p&gt;&#xA;&lt;/div&gt;&#xA;&lt;div class=&#34;paragraph&#34;&gt;&#xA;&lt;p&gt;stack:- this is where temporaries live.&lt;br/&gt;&#xA;environment:- this is where the environment that closures capture lives.&lt;br/&gt;&#xA;code:- where the control directives live (obv).&lt;br/&gt;&#xA;dump:- callee-save state (we shall see).&lt;br/&gt;&lt;/p&gt;&#xA;&lt;/div&gt;&#xA;&lt;div class=&#34;admonitionblock note&#34;&gt;&#xA;&lt;table&gt;&#xA;&lt;tbody&gt;&lt;tr&gt;&#xA;&lt;td class=&#34;icon&#34;&gt;&#xA;&lt;div class=&#34;title&#34;&gt;Note&lt;/div&gt;&#xA;&lt;/td&gt;&#xA;&lt;td class=&#34;content&#34;&gt;&#xA;I will try my best to follow along &lt;a href=&#34;https://www.brics.dk/RS/03/33/BRICS-RS-03-33.pdf&#34;&gt;paper&lt;/a&gt; by Oliver Danvy (really cool stuff from him; do check it out)&#xA;&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;/tbody&gt;&lt;/table&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;</description>
+			</item>
+			<item>
+				<title>/Workout</title>
+				<link>http://localhost:1313/workout/</link>
+				<pubDate>Sat, 14 Nov 2026 18:30:51 +0000</pubDate>
+				<guid>http://localhost:1313/workout/</guid>
+				<description>&lt;div class=&#34;sect1&#34;&gt;&#xA;&lt;h2 id=&#34;_my_work_out_routine&#34;&gt;My work out routine&lt;/h2&gt;&#xA;&lt;div class=&#34;sectionbody&#34;&gt;&#xA;&lt;div class=&#34;paragraph&#34;&gt;&#xA;&lt;p&gt;I recently started the gym. I’m not very consistent, and I try not to lift heavy because of my disc injury. But here’s my split.&lt;br/&gt;&lt;/p&gt;&#xA;&lt;/div&gt;&#xA;&lt;div class=&#34;sect2&#34;&gt;&#xA;&lt;h3 id=&#34;_day_1&#34;&gt;Day 1&lt;/h3&gt;&#xA;&lt;div class=&#34;sect3&#34;&gt;&#xA;&lt;h4 id=&#34;_upper_body&#34;&gt;Upper body&lt;/h4&gt;&#xA;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;div class=&#34;sect2&#34;&gt;&#xA;&lt;h3 id=&#34;_day_2&#34;&gt;Day 2&lt;/h3&gt;&#xA;&lt;div class=&#34;sect3&#34;&gt;&#xA;&lt;h4 id=&#34;_lower_body&#34;&gt;Lower body&lt;/h4&gt;&#xA;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;div class=&#34;sect2&#34;&gt;&#xA;&lt;h3 id=&#34;_day_3&#34;&gt;Day 3&lt;/h3&gt;&#xA;&lt;div class=&#34;sect3&#34;&gt;&#xA;&lt;h4 id=&#34;_arms&#34;&gt;arms&lt;/h4&gt;&#xA;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;div class=&#34;sect2&#34;&gt;&#xA;&lt;h3 id=&#34;_day4&#34;&gt;Day4&lt;/h3&gt;&#xA;&lt;div class=&#34;sect3&#34;&gt;&#xA;&lt;h4 id=&#34;_core&#34;&gt;core&lt;/h4&gt;&#xA;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;</description>
+			</item>
+			<item>
+				<title>/Aboutme</title>
+				<link>http://localhost:1313/aboutme/</link>
+				<pubDate>Sat, 14 Nov 2026 17:53:23 +0000</pubDate>
+				<guid>http://localhost:1313/aboutme/</guid>
+				<description>&lt;div class=&#34;sect1&#34;&gt;&#xA;&lt;h2 id=&#34;_about_me&#34;&gt;About me&lt;/h2&gt;&#xA;&lt;div class=&#34;sectionbody&#34;&gt;&#xA;&lt;div class=&#34;paragraph&#34;&gt;&#xA;&lt;p&gt;I am a compiler dev (?) who is interested in bespoke architectures such as target-triggered architectures, dataflow, transputers, etc.&#xA;These days I’m dabbling in a little bit of program analysis and PL Theory (HM type system, etc.).&#xA;Have a look around and talk to me if you find something interesting on here.&lt;/p&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;</description>
+			</item>
+	</channel>
+</rss>

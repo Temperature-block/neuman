@@ -1,0 +1,140 @@
+---
+title: "Secd"
+date: 2026-11-14T18:40:37Z
+draft: false
+categories: ["abstract machines"]
+tags: ["secd","lambda-calculus","tutorial","ocaml"]
+---
+
+This is my best attempt at implementing and writing about the SECD abstract machine.
+
+== Some History.
+This is an abstract machine proposed by Dr. Ladin in his seminal paper to execute lambda calculus; you can refer to the wiki for more history. +
+
+== High level overview
+SECD stands for stack, environment, code, and dump, the four registers that this machine uses +
+
+stack:- this is where temporaries live. +
+environment:- this is where the environment that closures capture lives. +
+code:- where the control directives live (obv). +
+dump:- callee-save state (we shall see). +
+
+NOTE: I will try my best to follow along https://www.brics.dk/RS/03/33/BRICS-RS-03-33.pdf[paper] by Oliver Danvy (really cool stuff from him; do check it out)
+
+== Implementation
+
+At the core of it, it's a really simple machine +
+for a simple lambda calculus: +
+[source.runnable,ocaml,linenum] 
+----
+module  LAMBDA = struct
+
+type term = Lit of int
+            | Var of string
+            | App of term * term
+            | Lam of string * term
+
+end
+----
+
+which deals with the environment of values of type: +
+[source.runnable,ocaml,linenum] 
+----
+type value = Int of int
+             | Succ
+             | Closure of (string * LAMBDA.term * env)
+and
+
+env = (string * value) list
+----
+Here, Succ is an inbuilt function that increments a number (n+1). +
+Closure is a lambda term stored along with its environment. +
+
+We still need to expand upon how we put values in the environment and fetch them. +
+
+[source.runnable,ocaml,linenum] 
+----
+module ENV = struct
+
+type t = value
+
+type env = (string * t) list
+
+let extend atom envm = atom::envm
+
+let rec lookup id = function
+                | [] -> None
+                | (x,y)::t ->  if x = id then Some(y) else lookup id t
+
+end
+----
+
+Note to self: use functors.
+
+extend:- take env type and env list and put it on top (env element is identified by string)
+
+lookup:- recurse through environment list and find value with "id". +
+
+We can see how shadowing takes effect here. It will be clearer as more of the implementation is revealed +
+
+Values with id's live on the environment stack; it's just a value list as we fetch values from the environment to evaluate them (we shall see). +
+
+What about dump and control/code? +
+Well, that's really simple, actually; we only need to define how we evaluate lambda terms and how we apply them (when?). +
+
+[source.runnable,ocaml,linenum] 
+----
+type control = Apply
+              | Term of LAMBDA.term
+----
+
+dump is just a backup of the machine state; its type is (s * e * c) which is to say (value list * (string * value) list * control list). +
+
+Now that we have types out of the way, we can see how the actual SECD machine is implemented (in one tail-recursive function run). +
+
+[source.runnable,ocaml,linenum] 
+----
+let rec run (s,e,c,d) = match (s,e,c,d) with
+                  | ([v],en,[],[]) -> v      (* 1 *)
+  
+                  | ([v],_,[],(stck,env,cont)::dmp) -> run ((v::stck),env,cont,dmp) (* 2 *)
+
+                  | (_,_, Term ( Lit t )::crst,_) -> run ((Int t)::s,e,crst,d)  (* tc of int lit term*) (* 3 *)
+
+                  | (_,_, Term ( Var t )::crst,_) -> run ((Option.get (ENV.lookup(t) e))::s,e,crst,d) (* 4 *)
+
+                  | (_,_, Term ( Lam (x,t) )::crst,_) -> run (Closure (x,t,e)::s,e,c,d) (* 5 *)
+
+                  | (_,_, Term ( App (t0,t1) )::crst,_) -> run (s,e,Term t0 :: Term t1 :: Apply::c,d) (* 6 *)
+
+                  | (Succ::Int n::stck,e,Apply::cont,d) -> run (Int(n+1)::s,e,c,d) (* 7 *)
+
+                  | (Closure (x,t,en)::obj::stck,env,Apply::c,_) -> run ( [],ENV.extend (x,obj) en , Term t::c,(s,e,c)::d) (* 8 *)
+
+----
+
+A few things to note: this function's pattern matching isn't exhaustive, something we will handle in the future. For now, it might be a Match_failure for weird cases that we didn't handle. +
+
+We will see the eval-apply loop nested inside the pattern matching. +
+
+. A value on the stack but nothing in the dump would mean that there's nothing left in the code, or the dump would mean we have a result that we return. +
+. A value on the stack but state left to evaluate on dump would mean that we have terms left to evaluate (think function returns a value to another), so we restore the state and put the result on the stack and call run again. +
+. If the term on the control is an int, put it on the stack. +
+. If the term on the control is a Var, do an environment lookup and put the value on the stack. +
+. If the term on the control is a Lambda, create a closure of its parameter body and environment and put it on the stack (we will see why). +
+. If the term on the control is an application, separate out the terms and put them along with the APPLY directive. We can see how arguments are evaluated eagerly here. +
+. If the successor term along with an int is on top of the stack, we increment the int and put it back on the stack. The succfn can be put on the stack using var Succ. +
+. If there is a closure along with a argument on stack we store  argument as with its parameter name on environment so argument can be fetched from env when required how convinient the lambda term will be put on control and previous control states are saved on dump. +
+
+
+The 8th point is crucial, as we see how, with environment mechanisms, we can handle function parameters and how function states are saved, and we can link it with the second point to form a full picture of how lambda calculus is evaluated. +
+
+This article is far from over; we still can improve upon this. We have yet to implement this in CPS style, and not to speak of De Bruijn indices, etc., which we shall explore in other articles. +
+
+Thanks for reading :)
+
+
+
+
+
+

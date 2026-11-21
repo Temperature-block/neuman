@@ -1,0 +1,12 @@
+---
+title: "/Aboutme"
+date: 2026-11-14T17:53:23Z
+draft: false
+---
+
+== About me
+
+I am a compiler dev (?) who is interested in bespoke architectures such as target-triggered architectures, dataflow, transputers, etc.
+These days I'm dabbling in a little bit of program analysis and PL Theory (HM type system, etc.).
+Have a look around and talk to me if you find something interesting on here.
+

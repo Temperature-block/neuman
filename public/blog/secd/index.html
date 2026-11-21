@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Secd | temperature&#39;s blog</title>
+<meta name="title" content="Secd" />
+<meta name="description" content="
+This is my best attempt at implementing and writing about the SECD abstract machine.
+
+
+Some History.
+
+
+This is an abstract machine proposed by Dr. Ladin in his seminal paper to execute lambda calculus; you can refer to the wiki for more history.
+
+
+
+
+High level overview
+
+
+SECD stands for stack, environment, code, and dump, the four registers that this machine uses
+
+
+stack:- this is where temporaries live.
+environment:- this is where the environment that closures capture lives.
+code:- where the control directives live (obv).
+dump:- callee-save state (we shall see).
+
+
+
+
+
+Note
+
+
+I will try my best to follow along paper by Oliver Danvy (really cool stuff from him; do check it out)
+
+
+
+
+
+" />
+<meta name="keywords" content="secd,lambda-calculus,tutorial,ocaml," />
+
+
+<meta property="og:url" content="http://localhost:1313/blog/secd/">
+	<meta property="og:site_name" content="temperature&#39;s blog">
+	<meta property="og:title" content="Secd">
+	<meta property="og:description" content="This is my best attempt at implementing and writing about the SECD abstract machine.
+Some History. This is an abstract machine proposed by Dr. Ladin in his seminal paper to execute lambda calculus; you can refer to the wiki for more history.
+High level overview SECD stands for stack, environment, code, and dump, the four registers that this machine uses
+stack:- this is where temporaries live.
+environment:- this is where the environment that closures capture lives.
+code:- where the control directives live (obv).
+dump:- callee-save state (we shall see).
+Note I will try my best to follow along paper by Oliver Danvy (really cool stuff from him; do check it out)">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="blog">
+		<meta property="article:published_time" content="2026-11-14T18:40:37+00:00">
+		<meta property="article:modified_time" content="2026-11-14T18:40:37+00:00">
+		<meta property="article:tag" content="Secd">
+		<meta property="article:tag" content="Lambda-Calculus">
+		<meta property="article:tag" content="Tutorial">
+		<meta property="article:tag" content="Ocaml">
+
+
+
+
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Secd">
+	<meta name="twitter:description" content="This is my best attempt at implementing and writing about the SECD abstract machine.
+Some History. This is an abstract machine proposed by Dr. Ladin in his seminal paper to execute lambda calculus; you can refer to the wiki for more history.
+High level overview SECD stands for stack, environment, code, and dump, the four registers that this machine uses
+stack:- this is where temporaries live.
+environment:- this is where the environment that closures capture lives.
+code:- where the control directives live (obv).
+dump:- callee-save state (we shall see).
+Note I will try my best to follow along paper by Oliver Danvy (really cool stuff from him; do check it out)">
+
+
+
+
+	<meta itemprop="name" content="Secd">
+	<meta itemprop="description" content="This is my best attempt at implementing and writing about the SECD abstract machine.
+Some History. This is an abstract machine proposed by Dr. Ladin in his seminal paper to execute lambda calculus; you can refer to the wiki for more history.
+High level overview SECD stands for stack, environment, code, and dump, the four registers that this machine uses
+stack:- this is where temporaries live.
+environment:- this is where the environment that closures capture lives.
+code:- where the control directives live (obv).
+dump:- callee-save state (we shall see).
+Note I will try my best to follow along paper by Oliver Danvy (really cool stuff from him; do check it out)">
+	<meta itemprop="datePublished" content="2026-11-14T18:40:37+00:00">
+	<meta itemprop="dateModified" content="2026-11-14T18:40:37+00:00">
+	<meta itemprop="wordCount" content="928">
+	<meta itemprop="keywords" content="Secd,Lambda-Calculus,Tutorial,Ocaml">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  :root {
+    --width: 720px;
+    --font-main: Verdana, sans-serif;
+    --font-secondary: Verdana, sans-serif;
+    --font-scale: 1em;
+    --background-color: #fff;
+    --heading-color: #222;
+    --text-color: #444;
+    --link-color: #3273dc;
+    --visited-color: #8b6fcb;
+    --blockquote-color: #222;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background-color: #01242e;
+      --heading-color: #eee;
+      --text-color: #ddd;
+      --link-color: #8cc2dd;
+      --visited-color: #8b6fcb;
+      --blockquote-color: #ccc;
+    }
+  }
+
+  body {
+    font-family: var(--font-secondary);
+    font-size: var(--font-scale);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width);
+    text-align: left;
+    background-color: var(--background-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-main);
+    color: var(--heading-color);
+  }
+
+  a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  nav a {
+    margin-right: 8px;
+  }
+
+  strong,
+  b {
+    color: var(--heading-color);
+  }
+
+  button {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  time {
+    font-family: monospace;
+    font-style: normal;
+    font-size: 15px;
+  }
+
+  main {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px dashed;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    font-family: monospace;
+    padding: 2px;
+    border-radius: 3px;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: var(--blockquote-color);
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px 0;
+    text-align: center;
+  }
+
+  .title:hover {
+    text-decoration: none;
+  }
+
+  .title h1 {
+    font-size: 1.5em;
+  }
+
+  .inline {
+    width: auto !important;
+  }
+
+  .highlight,
+  .code {
+    border-radius: 3px;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    overflow-x: auto;
+  }
+
+  .highlight pre,
+  .code pre {
+    min-width: 100%;
+    width: max-content;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: var(--visited-color);
+  }
+
+</style>
+<script async
+  src="https://cdn.jsdelivr.net/gh/art-w/x-ocaml.js@6/x-ocaml.js"
+  src-worker="https://cdn.jsdelivr.net/gh/art-w/x-ocaml.js@6/x-ocaml.worker+effects.js"
+></script>
+<script defer src="/js/ocaml-run.js"></script>
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>temperature&#39;s blog</h2>
+</a>
+<nav>
+<a href="/aboutme/">About</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>Secd</h1>
+<p>
+  <i>
+    <time datetime='2026-11-14'>
+      14 Nov, 2026
+    </time>
+  </i>
+</p>
+
+<content>
+  <div class="paragraph">
+<p>This is my best attempt at implementing and writing about the SECD abstract machine.</p>
+</div>
+<div class="sect1">
+<h2 id="_some_history">Some History.</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is an abstract machine proposed by Dr. Ladin in his seminal paper to execute lambda calculus; you can refer to the wiki for more history.<br/></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_high_level_overview">High level overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>SECD stands for stack, environment, code, and dump, the four registers that this machine uses<br/></p>
+</div>
+<div class="paragraph">
+<p>stack:- this is where temporaries live.<br/>
+environment:- this is where the environment that closures capture lives.<br/>
+code:- where the control directives live (obv).<br/>
+dump:- callee-save state (we shall see).<br/></p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tbody><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+I will try my best to follow along <a href="https://www.brics.dk/RS/03/33/BRICS-RS-03-33.pdf">paper</a> by Oliver Danvy (really cool stuff from him; do check it out)
+</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_implimentation">Implimentation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>At the core of it, it’s a really simple machine<br/>
+for a simple lambda calculus:<br/></p>
+</div>
+<div class="listingblock runnable">
+<div class="content">
+<pre class="highlight"><code class="language-ocaml" data-lang="ocaml">module  LAMBDA = struct
+
+type term = Lit of int
+            | Var of string
+            | App of term * term
+            | Lam of string * term
+
+end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>which deals with the environment of values of type:<br/></p>
+</div>
+<div class="listingblock runnable">
+<div class="content">
+<pre class="highlight"><code class="language-ocaml" data-lang="ocaml">type value = Int of int
+             | Succ
+             | Closure of (string * LAMBDA.term * env)
+and
+
+env = (string * value) list</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, Succ is an inbuilt function that increments a number (n+1).<br/>
+Closure is a lambda term stored along with its environment.<br/></p>
+</div>
+<div class="paragraph">
+<p>We still need to expand upon how we put values in the environment and fetch them.<br/></p>
+</div>
+<div class="listingblock runnable">
+<div class="content">
+<pre class="highlight"><code class="language-ocaml" data-lang="ocaml">module ENV = struct
+
+type t = value
+
+type env = (string * t) list
+
+let extend atom envm = atom::envm
+
+let rec lookup id = function
+                | [] -&gt; None
+                | (x,y)::t -&gt;  if x = id then Some(y) else lookup id t
+
+end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note to self: use functors.</p>
+</div>
+<div class="paragraph">
+<p>extend:- take env type and env list and put it on top (env element is identified by string)</p>
+</div>
+<div class="paragraph">
+<p>lookup:- recurse through environment list and find value with &#34;id&#34;.<br/></p>
+</div>
+<div class="paragraph">
+<p>We can see how shadowing takes effect here. It will be clearer as more of the implementation is revealed<br/></p>
+</div>
+<div class="paragraph">
+<p>Values with id’s live on the environment stack; it’s just a value list as we fetch values from the environment to evaluate them (we shall see).<br/></p>
+</div>
+<div class="paragraph">
+<p>What about dump and control/code?<br/>
+Well, that’s really simple, actually; we only need to define how we evaluate lambda terms and how we apply them (when?).<br/></p>
+</div>
+<div class="listingblock runnable">
+<div class="content">
+<pre class="highlight"><code class="language-ocaml" data-lang="ocaml">type control = Apply
+              | Term of LAMBDA.term</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>dump is just a backup of the machine state; its type is (s * e * c) which is to say (value list * (string * value) list * control list).<br/></p>
+</div>
+<div class="paragraph">
+<p>Now that we have types out of the way, we can see how the actual SECD machine is implemented (in one tail-recursive function run).<br/></p>
+</div>
+<div class="listingblock runnable">
+<div class="content">
+<pre class="highlight"><code class="language-ocaml" data-lang="ocaml">let rec run (s,e,c,d) = match (s,e,c,d) with
+                  | ([v],en,[],[]) -&gt; v      (* 1 *)
+
+                  | ([v],_,[],(stck,env,cont)::dmp) -&gt; run ((v::stck),env,cont,dmp) (* 2 *)
+
+                  | (_,_, Term ( Lit t )::crst,_) -&gt; run ((Int t)::s,e,crst,d)  (* tc of int lit term*) (* 3 *)
+
+                  | (_,_, Term ( Var t )::crst,_) -&gt; run ((Option.get (ENV.lookup(t) e))::s,e,crst,d) (* 4 *)
+
+                  | (_,_, Term ( Lam (x,t) )::crst,_) -&gt; run (Closure (x,t,e)::s,e,c,d) (* 5 *)
+
+                  | (_,_, Term ( App (t0,t1) )::crst,_) -&gt; run (s,e,Term t0 :: Term t1 :: Apply::c,d) (* 6 *)
+
+                  | (Succ::Int n::stck,e,Apply::cont,d) -&gt; run (Int(n+1)::s,e,c,d) (* 7 *)
+
+                  | (Closure (x,t,en)::obj::stck,env,Apply::c,_) -&gt; run ( [],ENV.extend (x,obj) en , Term t::c,(s,e,c)::d) (* 8 *)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A few things to note: this function’s pattern matching isn’t exhaustive, something we will handle in the future. For now, it might be a Match_failure for weird cases that we didn’t handle.<br/></p>
+</div>
+<div class="paragraph">
+<p>We will see the eval-apply loop nested inside the pattern matching.<br/></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>A value on the stack but nothing in the dump would mean that there’s nothing left in the code, or the dump would mean we have a result that we return.<br/></p>
+</li>
+<li>
+<p>A value on the stack but state left to evaluate on dump would mean that we have terms left to evaluate (think function returns a value to another), so we restore the state and put the result on the stack and call run again.<br/></p>
+</li>
+<li>
+<p>If the term on the control is an int, put it on the stack.<br/></p>
+</li>
+<li>
+<p>If the term on the control is a Var, do an environment lookup and put the value on the stack.<br/></p>
+</li>
+<li>
+<p>If the term on the control is a Lambda, create a closure of its parameter body and environment and put it on the stack (we will see why).<br/></p>
+</li>
+<li>
+<p>If the term on the control is an application, separate out the terms and put them along with the APPLY directive. We can see how arguments are evaluated eagerly here.<br/></p>
+</li>
+<li>
+<p>If the successor term along with an int is on top of the stack, we increment the int and put it back on the stack. The succfn can be put on the stack using var Succ.<br/></p>
+</li>
+<li>
+<p>If there is a closure along with a argument on stack we store  argument as with its parameter name on environment so argument can be fetched from env when required how convinient the lambda term will be put on control and previous control states are saved on dump.<br/></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The 8th point is crucial, as we see how, with environment mechanisms, we can handle function parameters and how function states are saved, and we can link it with the second point to form a full picture of how lambda calculus is evaluated.<br/></p>
+</div>
+<div class="paragraph">
+<p>This article is far from over; we still can improve upon this. We have yet to implement this in CPS style, and not to speak of De Bruijn indices, etc., which we shall explore in other articles.<br/></p>
+</div>
+<div class="paragraph">
+<p>Thanks for reading :)</p>
+</div>
+</div>
+</div>
+
+</content>
+
+<p>
+  
+  <a href="http://localhost:1313/tags/secd/">#Secd</a>
+  
+  <a href="http://localhost:1313/tags/lambda-calculus/">#Lambda-Calculus</a>
+  
+  <a href="http://localhost:1313/tags/tutorial/">#Tutorial</a>
+  
+  <a href="http://localhost:1313/tags/ocaml/">#Ocaml</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+  
+</body>
+
+</html>

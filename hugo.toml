@@ -4,9 +4,37 @@ title = "temperature's blog"
 theme = 'hugo-bearblog'
 unsafe = true
 
+[parrams]
+ enablePostNavigator = true
+ ShowPostNavLinks = true
+
+[author]
+  name = "Temperature block"
+
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
       hardWraps = false
       unsafe = true
       xhtml = false
+
+[security]
+  [security.exec]
+    allow = [
+      '^(dart-)?sass$',
+      '^go$',
+      '^git$',
+      '^node$',
+      '^postcss$',
+      '^asciidoctor$'
+    ]
+
+[[menus.main]]
+  name = 'About'
+  pageRef = '/Aboutme'
+  weight = 10
+  
+[[menus.main]]
+  name = 'Blog'
+  pageRef = '/blog'
+  weight = 20

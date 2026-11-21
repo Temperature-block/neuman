@@ -1,0 +1,28 @@
+---
+title: "/Workout"
+date: 2026-11-14T18:30:51Z
+draft: false
+---
+
+== My work out routine
+
+I recently started the gym. I'm not very consistent, and I try not to lift heavy because of my disc injury. But here's my split. +
+
+=== Day 1
+
+==== Upper body
+
+
+=== Day 2
+
+==== Lower body
+
+
+=== Day 3
+
+==== arms
+
+
+=== Day4
+
+==== core
