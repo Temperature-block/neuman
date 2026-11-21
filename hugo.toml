@@ -3,7 +3,7 @@ locale = 'en-us'
 title = "temperature's blog"
 theme = 'hugo-bearblog'
 unsafe = true
-
+baseURL = 'https://neuman.tlab-vijay.workers.dev/'
 [parrams]
  enablePostNavigator = true
  ShowPostNavLinks = true
