@@ -95,22 +95,22 @@ Now that we have types out of the way, we can see how the actual SECD machine is
 [source.runnable,ocaml,linenum] 
 ----
 let rec run (s,e,c,d) = match (s,e,c,d) with
-                  | ([v],en,[],[]) -> v      (* 1 *)
-  
+
+                  | ([v],en,[],[]) -> v        (* 1 *)
+
                   | ([v],_,[],(stck,env,cont)::dmp) -> run ((v::stck),env,cont,dmp) (* 2 *)
 
-                  | (_,_, Term ( Lit t )::crst,_) -> run ((Int t)::s,e,crst,d) (* 3 *)
+                  | (_,_, Term ( Lit t )::crst,_) -> run ((Int t)::s,e,crst,d)  (* 3 *)
 
                   | (_,_, Term ( Var t )::crst,_) -> run ((Option.get (ENV.lookup(t) e))::s,e,crst,d) (* 4 *)
 
-                  | (_,_, Term ( Lam (x,t) )::crst,_) -> run (Closure (x,t,e)::s,e,c,d) (* 5 *)
+                  | (_,_, Term ( Lam (x,t) )::crst,_) -> run (Closure (x,t,e)::s,e,crst,d) (* 5 *)
 
-                  | (_,_, Term ( App (t0,t1) )::crst,_) -> run (s,e,Term t0 :: Term t1 :: Apply::c,d) (* 6 *)
+                  | (_,_, Term ( App (t0,t1) )::crst,_) -> run (s,e,Term t1 :: Term t0 :: Apply::crst,d) (* 6 *)
 
-                  | (Succ::Int n::stck,e,Apply::cont,d) -> run (Int(n+1)::s,e,c,d) (* 7 *)
+                  | (Succ::Int n::stck,e,Apply::crst,d) -> run (Int(n+1)::stck,e,crst,d) (* 7 *)
 
-                  | (Closure (x,t,en)::obj::stck,env,Apply::c,_) -> run ( [],ENV.extend (x,obj) en , Term t::c,(s,e,c)::d) (* 8 *)
-
+                  | (Closure (x,t,en)::obj::stck,env,Apply::c,_) -> run ( [],ENV.extend (x,obj) en , [Term t],(stck,e,c)::d) (* 8 *)
 ----
 
 A few things to note: this function's pattern matching isn't exhaustive, something we will handle in the future. For now, it might be a Match_failure for weird cases that we didn't handle. +
